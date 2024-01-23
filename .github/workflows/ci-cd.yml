@@ -2,7 +2,7 @@ name: CI-CD
  
 env:
   AZURE_RG: RG3
-  AZURE_SUBSCRIPTION: <<Subscription ID>>
+  AZURE_SUBSCRIPTION: "3706d200-555e-4a7f-b9de-e40f795a2bb5"
   AZURE-LOCATION: WestEurope
 on:
   push:
