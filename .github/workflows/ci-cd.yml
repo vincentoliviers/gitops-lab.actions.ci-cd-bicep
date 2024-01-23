@@ -1,0 +1,47 @@
+name: CI-CD
+ 
+env:
+  AZURE_RG: RG3
+  AZURE_SUBSCRIPTION: <<Subscription ID>>
+  AZURE-LOCATION: WestEurope
+on:
+  push:
+    branches: 
+      - main
+    paths-ignore: 
+      - README.md
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  Build-Job:
+    runs-on: ubuntu-latest
+    env:
+      configuration: release
+steps:
+- name: Checkout Sources
+  uses: actions/checkout@v4
+- name: Setup .NET
+  uses: actions/setup-dotnet@v2.0.0
+  with:
+    dotnet-version: 6.0.x
+- name: Restore dependencies
+  run: dotnet restore
+- name: Build
+  run: dotnet build --no-restore --configuration ${{ env.configuration }}
+- name: Test
+  run: dotnet test --no-build --verbosity normal --configuration ${{ env.configuration }}
+- name: Publish 
+  run: dotnet publish --configuration ${{ env.configuration }} --output ${{runner.temp }}/publish
+- name: Upload the Publish artifact
+  uses: actions/upload-artifact@v3.0.0
+  with:
+    name: publish_artifact
+    path: ${{ runner.temp }}/publish
+    retention-days: 30
+- name: Upload a Templates Artifact
+  uses: actions/upload-artifact@v3.0.0
+  with:
+    name: templates_artifact
+    path: ./templates/* 
+    retention-days: 30
